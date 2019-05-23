@@ -1,0 +1,6 @@
+a. MMSE: (RUN EXPLICITLY) cc_mmse_load_validate_save -> cc_mmse_prepare_computation -> mvsampen_full+embd
+
+b. MMSE on MEMD: (RUN EXPLICITLY) cc_memd_load_validate_prepare_computation_save -> memd ->
+(RUN EXPLICITLY) cc_mmse_on_memd_load_save -> cc_mmse_on_memd_prepare_computation -> mvsampen_full+embd
+
+   
