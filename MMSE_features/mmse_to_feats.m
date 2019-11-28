@@ -4,7 +4,7 @@ function  f=mmse_to_feats(input_file, output_file, scales)
 % max_slope, avg_entropy, diff_std) and save results in CSV format.
 %
 % Usage:
-%    x = mmse_to_feats('input.csv'), 'output.csv')
+%    x = mmse_to_feats('input.csv', 'output.csv')
 %
     if nargin < 3
         scales = 1:12;
