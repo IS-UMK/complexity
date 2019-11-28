@@ -1,8 +1,10 @@
-function  d=mmse_distances(input_file1, input_file2, output_file)
+function  d=mmse_distances(input_file1, input_file2, output_file, scales)
 
 % Reads pair of CSV file with raw MMSE scales, compute distances for each subject (row-wise)
 
-    selected_scales = 1:11;
+    if nargin < 4
+        scales = 1:12;
+    end
     
     % distances = { 'euclidean' , 'chebychev',  'cosine' , 'max_diff_id'};
     distances = { 'euclidean' , 'chebychev',  'cosine' };
@@ -12,18 +14,24 @@ function  d=mmse_distances(input_file1, input_file2, output_file)
     end
 
     x = readtable(input_file1);
-    x.Properties.RowNames = x.ID;
+    x_id_name = x.Properties.VariableNames(1);
+    x.Properties.RowNames = x.(x_id_name{1});
     
     y = readtable(input_file2);
-    y.Properties.RowNames = y.ID;
+    y_id_name = y.Properties.VariableNames(1);
+    y.Properties.RowNames = y.(y_id_name{1});
     
-    mmse_vars = regex_table_vars(x, '^MMSEValuesFinal_[0-9]+$');
+    x_var_names = x.Properties.VariableNames(2:end);
+    x_mmse_vars = x_var_names(scales);
     
-    d = x(:, 'ID');
+    y_var_names = y.Properties.VariableNames(2:end);
+    y_mmse_vars = y_var_names(scales);
+    
+    d = x(:, x_id_name);
     
     for dst = distances
         distance = dst{1};
-        d.(distance) = pdist3(x{:, mmse_vars(selected_scales)}, y{:, mmse_vars(selected_scales)}, distance);
+        d.(distance) = pdist3(x{:, x_mmse_vars}, y{:, y_mmse_vars}, distance);
     end
     
     writetable(d, output_file, 'Delimiter', ';');
