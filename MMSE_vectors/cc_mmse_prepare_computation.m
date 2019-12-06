@@ -1,5 +1,5 @@
 function MMSEValues = cc_mmse_prepare_computation(EEGData)
-
+ 
 % embedding dimension
 embedDim = 2;
 % time lag value
@@ -13,11 +13,13 @@ scaleFactor = 12;
 
 % normalizing time series to be within [0,1] as done in mmse.m function by Rehman and Mandic
 % note however, that this is redundant, as z-score is computed afterwards
+%{
 for i = 1:numChan
     m = min(EEGData(:,i));
     M = max(EEGData(:,i));
     EEGData(:,i) = (EEGData(:,i)-m)/(M-m);
 end
+%}
 EEGData = zscore(EEGData);
 
 % r,M,tau parameters are selected as in Ahmed and Mandic's papers

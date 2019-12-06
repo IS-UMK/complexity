@@ -4,7 +4,7 @@ function A=embd(M,tau,ts)
 % M is a row vector [m1 m2 ...mnvar] and tau is also a row vector [tau1 tau2....taunvar] where nvar is the 
 % number of channels; 
 % ts is the multivariate time series-a matrix of size nvarxnsamp;
-
+ 
 [nvar,nsamp]=size(ts);
 A=[];
 
