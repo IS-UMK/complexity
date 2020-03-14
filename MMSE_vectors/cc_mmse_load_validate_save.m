@@ -7,13 +7,13 @@ function [] = cc_mmse_load_validate_save(file,elecAn)
 % elecAn = {'f3','f4','cz','p3','p4'}    
 
     load(file);
-    cases = length(UJ2);     
+    cases = length(UJ);     
     
     % initial length of data = length of the first sample batch of the
     % first subject
-    numberSamples = size(UJ2(1).data,2); 
+    numberSamples = size(UJ(1).data,2); 
     for caseID = 1:cases
-        numberSamples = min(numberSamples, size(UJ2(caseID).data,2));
+        numberSamples = min(numberSamples, size(UJ(caseID).data,2));
     end
     disp(['CC: number of samples: ',num2str(numberSamples)]); 
     
@@ -22,22 +22,22 @@ function [] = cc_mmse_load_validate_save(file,elecAn)
         
         % checks minimal length of data and whether
         % all required electrodes are present for the current subject
-        labelsTemp = lower({UJ2(caseID).chanlocs.labels});
+        labelsTemp = lower({UJ(caseID).chanlocs.labels});
         labelsIndex = find(ismember(labelsTemp,elecAn));
-        if (length(labelsIndex) ~= length(elecAn) || isempty(UJ2(caseID).subject))
+        if (length(labelsIndex) ~= length(elecAn) || isempty(UJ(caseID).subject))
             continue;
         end        
         disp(['CC: electrodes indices: ',num2str(labelsIndex)]);                
         
         % actual MMSE computation
-        EEGData = UJ2(caseID).data(labelsIndex,1:numberSamples)';
-        UJ2(caseID).MMSE.MMSEValues = cc_mmse_prepare_computation(EEGData);
+        EEGData = UJ(caseID).data(labelsIndex,1:numberSamples)';
+        UJ(caseID).MMSE.MMSEValues = cc_mmse_prepare_computation(EEGData);
 
         disp(['CC: ',datestr(now),': finished: ',num2str(caseID)]);    
         
         x=struct;
-        x.name=[sprintf('%s',UJ2(caseID).subject)];
-        x.mmse=UJ2(caseID).MMSE.MMSEValues(:,1)'; 
+        x.name=[sprintf('%s',UJ(caseID).subject)];
+        x.mmse=UJ(caseID).MMSE.MMSEValues(:,1)'; 
         filename_temp=[x.name,'.csv'];
         writetable(struct2table(x),filename_temp,'Delimiter','\t');
     end
