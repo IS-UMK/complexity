@@ -9,23 +9,23 @@ options(max.print=1000000)
 rm(list = ls())
 
 # load SPSS data set   
-UJ <- read_sav("D:/Asus/Johasia/komputer hp/pulpit/zmienność/art HBM 2019/data/UJ/uj10240sampli/UJ_10240-nowe-BB.sav")
-
-# select rows of UJ_MMSE which does not have "NA" in gf_final
-UJ <- UJ[!is.na(UJ$gf_final),]
+UJ <- read_sav("http://fizyka.umk.pl/~tpiotrowski/complexity/UJ_gf_complexity.csv")
 
 # sex==1 males, sex==2 females
+# for overall group (males+females), the following selections should be commented out
 
-# UJ <- UJ[UJ$sel5_RAPM_outliers==0 & UJ$sex==2,]
-# UJ <- UJ[UJ$sel5_RAPM_outliers==0 & UJ$sex==1,]
-UJ <- UJ[UJ$sel5_RAPM_outliers==0,]
+# for females, there are no outliers
+UJ <- UJ[UJ$sex==2,]
 
-X_UJ_AUC <- as.matrix(UJ %>% select(contains("mmse_10240_AUC")))
-X_UJ_AVG <- as.matrix(UJ %>% select(contains("mmse_10240_AVG")))
-X_UJ_MaxSlope <- as.matrix(UJ %>% select(contains("mmse_10240_MaxSlope")))
+# for males, few outliers are removed
+# UJ <- UJ[UJ$outliers==0& UJ$sex==1,]
+
+X_UJ_AUC <- as.matrix(UJ %>% select(contains("AUC")))
+X_UJ_AVG <- as.matrix(UJ %>% select(contains("AvgEnt")))
+X_UJ_MaxSlope <- as.matrix(UJ %>% select(contains("MaxSlope")))
 X <- cbind(X_UJ_AUC,X_UJ_AVG,X_UJ_MaxSlope)
 
-y <- UJ$gf_final_2
+y <- UJ$gf_final
 
 # cases used for training
 PLSmodel <- list(y,X)
@@ -60,13 +60,13 @@ UJ_PLSR_NO_CV <- plsr(dep ~ indep, ncomp = max_comp, data = PLSmodel, method = "
 # RMSEP(UJ_PLSR_NO_CV)
 
 # fitted (fixed-effect) PLS model using MVDALAB function allowing for bootstrapped confidence interval estimation 
-UJ_PLSR_BOOT <- plsFit(dep ~ indep, scale = TRUE, data = PLSmodel, ncomp = 3, validation = "oob", boots = 10000)
+UJ_PLSR_BOOT <- plsFit(dep ~ indep, scale = TRUE, data = PLSmodel, ncomp = 1, validation = "oob", boots = 10000)
 
 # R-squared for fitted model - the same (up to 1e^{-5}) as R2(UJ_PLSR_NO_CV) above
 R2s(UJ_PLSR_BOOT)
 
 # bootstrapped confidence interval estimation
-cfs_int <- coefficients.boots(UJ_PLSR_BOOT, ncomp = 3, conf = .95)
+cfs_int <- coefficients.boots(UJ_PLSR_BOOT, ncomp = 1, conf = .95)
 
 # all intervals
 x <- cfs_int[[1]]
